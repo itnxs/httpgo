@@ -10,19 +10,15 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// Version 信息，可在构建时通过 ldflags 注入
-var (
-	Version   = "1.0.0"
-	Commit    = "unknown"
-	BuildTime = "unknown"
-)
+// Version 版本信息
+var Version = "1.0.0"
 
 const (
 	// 使用常量文件中的默认值
-	defaultConnections  = DefaultConnections
-	defaultDuration     = DefaultDuration
-	defaultTimeout      = DefaultTimeout
-	defaultMaxRedirects = DefaultMaxRedirects
+	defaultConnections  = 128
+	defaultDuration     = time.Second * 10
+	defaultTimeout      = time.Second * 3
+	defaultMaxRedirects = 30
 )
 
 // HttpGo denotes httpgo application

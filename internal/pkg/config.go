@@ -15,6 +15,12 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// HTTP 相关常量
+const (
+	mimeApplicationJSON = "application/json"
+	mimeApplicationForm = "application/x-www-form-urlencoded"
+)
+
 // Config 保存 httpgo 的配置设置
 type Config struct {
 	// Connections 表示并发使用的 TCP 连接数
@@ -300,10 +306,10 @@ func (c *Config) setReqHeader(req *fasthttp.Request) (err error) {
 	}
 
 	if c.JSON {
-		req.Header.SetContentType(MIMEApplicationJSON)
+		req.Header.SetContentType(mimeApplicationJSON)
 	}
 	if c.Form {
-		req.Header.SetContentType(MIMEApplicationForm)
+		req.Header.SetContentType(mimeApplicationForm)
 	}
 
 	return

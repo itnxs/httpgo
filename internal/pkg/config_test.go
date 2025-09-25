@@ -142,14 +142,14 @@ func Test_Config_setReqHeader(t *testing.T) {
         c, req := configAndReq()
         c.JSON = true
         assert.Nil(t, c.setReqHeader(req))
-        assert.Equal(t, MIMEApplicationJSON, string(req.Header.ContentType()))
+        assert.Equal(t, mimeApplicationJSON, string(req.Header.ContentType()))
     })
 
     t.Run("form", func(t *testing.T) {
         c, req := configAndReq()
         c.Form = true
         assert.Nil(t, c.setReqHeader(req))
-        assert.Equal(t, MIMEApplicationForm, string(req.Header.ContentType()))
+        assert.Equal(t, mimeApplicationForm, string(req.Header.ContentType()))
     })
 }
 
