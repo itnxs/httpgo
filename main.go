@@ -43,7 +43,6 @@ func init() {
 	rootCmd.Flags().BoolVar(&config.Follow, "follow", false, "在调试模式下跟随 30x 重定向")
 	rootCmd.Flags().IntVar(&config.MaxRedirects, "maxRedirects", 0, "跟随 30x 重定向的最大次数，默认为 30（配合 --follow 使用）")
 	rootCmd.Flags().BoolVarP(&config.Debug, "debug", "D", false, "只发送一次请求并显示请求和响应详情")
-	rootCmd.Flags().BoolVar(&config.Http2, "http2", false, "使用 HTTP/2.0")
 }
 
 var rootCmd = &cobra.Command{

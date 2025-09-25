@@ -360,7 +360,6 @@ func latencyResult(latencies []int64) (avg float64, stdev float64, max float64) 
 
     var sum float64
     for _, latency := range latencies {
-        // us -> ms
         r := float64(latency) / 1000
         sum += r
         if r > max {

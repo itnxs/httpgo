@@ -14,7 +14,6 @@ import (
     "golang.org/x/net/proxy"
 )
 
-// counterConn counts read bytes and written bytes
 type counterConn struct {
     net.Conn
     n *int64
