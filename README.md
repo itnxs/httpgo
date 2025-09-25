@@ -3,6 +3,7 @@
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.18-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+HttpGo 大部分由AI编写完成, 由人类删除多余代码
 HttpGo 是一个快速、轻量级的 HTTP 基准测试工具，用 Go 语言编写。它提供了丰富的功能来测试 HTTP 服务的性能，支持各种协议、代理和认证方式。
 
 ## ✨ 特性
