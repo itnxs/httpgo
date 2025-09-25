@@ -1,0 +1,112 @@
+# golangci-lint 配置文件
+# 更多配置选项请参考: https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  gci:
+    local-prefixes: github.com/itnxs/httpgo
+  
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    disabled-checks:
+      - unnamedResult
+      - hugeParam
+  
+  gofmt:
+    simplify: true
+  
+  goimports:
+    local-prefixes: github.com/itnxs/httpgo
+  
+  golint:
+    min-confidence: 0.8
+  
+  govet:
+    check-shadowing: true
+    enable-all: true
+  
+  lll:
+    line-length: 120
+  
+  misspell:
+    locale: US
+  
+  unused:
+    check-exported: false
+
+linters:
+  enable:
+    - bodyclose
+    - errcheck
+    - gci
+    - goconst
+    - gocritic
+    - gofmt
+    - goimports
+    - golint
+    - gosec
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unused
+    - whitespace
+  
+  disable:
+    - deadcode
+    - structcheck
+    - varcheck
+    - scopelint
+    - interfacer
+    - maligned
+
+issues:
+  exclude-use-default: false
+  exclude:
+    # 忽略一些常见的误报
+    - "Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked"
+    - "func name will be used as test\.Test.* by other packages, and that stutters; consider calling this"
+    
+  exclude-rules:
+    # 在测试文件中禁用某些检查
+    - path: _test\.go
+      linters:
+        - gosec
+        - goconst
+        - lll
+    
+    # 忽略主函数中的某些检查
+    - path: main\.go
+      linters:
+        - gocyclo
+        - funlen
+
+severity:
+  default-severity: error
+  rules:
+    - linters:
+        - golint
+      severity: warning

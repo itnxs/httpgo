@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -160,7 +160,7 @@ func (c *Config) setReqBody(req *fasthttp.Request) (err error) {
 	}
 
 	if c.File != "" {
-		c.body, err = ioutil.ReadFile(filepath.Clean(c.File))
+		c.body, err = os.ReadFile(filepath.Clean(c.File))
 	}
 
 	if !c.Stream {
@@ -179,51 +179,89 @@ func (c *Config) parseArgs() {
 
 	isJson := true
 	for _, arg := range c.Args {
+		// 检查参数格式有效性
+		if arg == "" {
+			continue
+		}
+
 		formEqualIndex := strings.Index(arg, "=")
 		jsonEqualIndex := strings.Index(arg, ":=")
 		// 没有 "=" 或 "=" 在 ":=" 之前
 		if formEqualIndex == -1 || jsonEqualIndex == -1 || formEqualIndex < jsonEqualIndex {
 			isJson = false
+			break
 		}
 	}
 
 	if isJson {
-		c.JSON = true
-		c.body = append(c.body, '{')
-		for ii, arg := range c.Args {
-			i := strings.Index(arg, ":=")
-			k, v := strings.TrimSpace(arg[:i]), strings.TrimSpace(arg[i+2:])
-			c.body = append(c.body, '"')
-			c.body = append(c.body, k...)
-			c.body = append(c.body, '"', ':')
-			b := needQuote(v)
-			if b {
-				c.body = append(c.body, '"')
-			}
-			c.body = append(c.body, v...)
-			if b {
-				c.body = append(c.body, '"')
-			}
-			if ii < len(c.Args)-1 {
-				c.body = append(c.body, ',')
-			}
-		}
-		c.body = append(c.body, '}')
+		c.buildJSONBody()
 	} else {
-		c.Form = true
-		c.Method = fasthttp.MethodPost
-		formArgs := fasthttp.AcquireArgs()
-		for _, arg := range c.Args {
-			i := strings.Index(arg, "=")
-			if i == -1 {
-				formArgs.AddNoValue(strings.TrimSpace(arg))
-			} else {
-				formArgs.Add(strings.TrimSpace(arg[:i]), strings.TrimSpace(arg[i+1:]))
+		c.buildFormBody()
+	}
+}
+
+// buildJSONBody 构建 JSON 请求体
+func (c *Config) buildJSONBody() {
+	c.JSON = true
+	c.body = append(c.body, '{')
+	for ii, arg := range c.Args {
+		if arg == "" {
+			continue
+		}
+
+		i := strings.Index(arg, ":=")
+		if i == -1 {
+			continue // 跳过无效参数
+		}
+
+		k, v := strings.TrimSpace(arg[:i]), strings.TrimSpace(arg[i+2:])
+		if k == "" {
+			continue // 跳过空键名
+		}
+
+		c.body = append(c.body, '"')
+		c.body = append(c.body, k...)
+		c.body = append(c.body, '"', ':')
+
+		if needQuote(v) {
+			c.body = append(c.body, '"')
+			c.body = append(c.body, v...)
+			c.body = append(c.body, '"')
+		} else {
+			c.body = append(c.body, v...)
+		}
+
+		if ii < len(c.Args)-1 {
+			c.body = append(c.body, ',')
+		}
+	}
+	c.body = append(c.body, '}')
+}
+
+// buildFormBody 构建表单请求体
+func (c *Config) buildFormBody() {
+	c.Form = true
+	c.Method = fasthttp.MethodPost
+	formArgs := fasthttp.AcquireArgs()
+	defer fasthttp.ReleaseArgs(formArgs)
+
+	for _, arg := range c.Args {
+		if arg == "" {
+			continue
+		}
+
+		i := strings.Index(arg, "=")
+		if i == -1 {
+			formArgs.AddNoValue(strings.TrimSpace(arg))
+		} else {
+			key := strings.TrimSpace(arg[:i])
+			value := strings.TrimSpace(arg[i+1:])
+			if key != "" {
+				formArgs.Add(key, value)
 			}
 		}
-		c.body = formArgs.AppendBytes(c.body)
-		fasthttp.ReleaseArgs(formArgs)
 	}
+	c.body = formArgs.AppendBytes(c.body)
 }
 
 func needQuote(v string) bool {

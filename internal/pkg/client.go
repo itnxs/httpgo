@@ -11,11 +11,6 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-const (
-	MIMEApplicationJSON = "application/json"
-	MIMEApplicationForm = "application/x-www-form-urlencoded"
-)
-
 type client interface {
 	do() (int, time.Duration, error)
 	doOnce() error
