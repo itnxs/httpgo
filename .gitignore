@@ -3,3 +3,4 @@
 ./httpgo
 /logs/
 /vendor/
+/build/
